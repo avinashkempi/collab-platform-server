@@ -3,9 +3,15 @@ require("dotenv").config();
 const connectDB = require("../config/db");
 const userRouter = require("./routes/user");
 const errorRouter = require("./routes/error");
+const cookieParser = require("cookie-parser");
 
 const app = express();
+
+// middlewares
+app.use(cookieParser());
 app.use(express.json());
+
+// routes
 app.use("/api/auth", userRouter);
 app.use("/", errorRouter);
 
