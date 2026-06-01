@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const userAuth = require("../middlewares/userAuth");
 
 const userRouter = express.Router();
 
@@ -23,7 +24,7 @@ userRouter.post("/login", async (req, res) => {
 
     res.json({ message: "User Loggedin!" });
   } catch (error) {
-    res.status(400).send("ERROR: " + error.message);
+    res.status(401).send("ERROR: " + error.message);
   }
 });
 
@@ -41,6 +42,22 @@ userRouter.post("/signup", async (req, res) => {
 
     await user.save();
     res.json({ message: "User create successfully!" });
+  } catch (error) {
+    res.status(400).send("ERROR: " + error.message);
+  }
+});
+
+userRouter.patch("/profile/edit", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    Object.keys(loggedInUser).forEach((item) => {
+      loggedInUser[item] = req.body[item];
+    });
+    await loggedInUser.save();
+    res.json({
+      message: loggedInUser.name + ", your data is updated",
+      data: loggedInUser,
+    });
   } catch (error) {
     res.status(400).send("ERROR: " + error.message);
   }
