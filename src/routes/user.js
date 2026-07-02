@@ -63,6 +63,13 @@ userRouter.patch("/profile/edit", userAuth, async (req, res) => {
   }
 });
 
-userRouter.get("/me", (req, res) => {});
+userRouter.get("/me", userAuth, (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    res.json(loggedInUser);
+  } catch (error) {
+    res.status(400).send("ERROR: " + error.message);
+  }
+});
 
 module.exports = userRouter;
